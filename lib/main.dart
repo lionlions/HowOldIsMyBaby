@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
-import 'dart:developer';
+import 'package:how_old_is_my_baby/Model/baby.dart';
+import 'package:sqflite/sqflite.dart';
+import 'DB/database_helper.dart';
 import 'add_baby_info.dart';
 
 void main() {
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'How old is my baby'),
+      home: const MyHomePage(title: '我的寶寶幾歲了?'),
     );
   }
 }
@@ -32,10 +33,38 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List<Baby> _babyList = [];
 
   @override
   void initState() {
-    // TODO: Get data from DB
+    getBabyList();
+  }
+
+  void getBabyList() async {
+    final list = await getBabyListFromDB();
+    debugPrint("list: $list");
+    setState(() {
+      _babyList = list;
+    });
+  }
+
+  Future<List<Baby>> getBabyListFromDB() async {
+    // Get a reference to the database
+    Database db = await DatabaseHelper.instance.database;
+
+    // Query the table for all the Baby
+    final List<Map<String, dynamic>> maps =
+        await db.query(DatabaseHelper.table);
+
+    //Convert the List<Map<String, dynamic>> into the List<Baby>
+    return List.generate(maps.length, (index) {
+      return Baby(
+          name: maps[index][DatabaseHelper.columnName],
+          iconFileName: maps[index][DatabaseHelper.columnIconFileName],
+          iconBackgroundColor: maps[index]
+              [DatabaseHelper.columnIconBackgroundColor],
+          birthday: maps[index][DatabaseHelper.columnBirthday]);
+    });
   }
 
   @override
@@ -45,9 +74,10 @@ class _MyHomePageState extends State<MyHomePage> {
           .push(MaterialPageRoute(builder: (BuildContext context) {
         return const AddBabyInfo();
       })).then((needToUpdate) {
-        if(needToUpdate){
+        if (needToUpdate) {
           setState(() {
             debugPrint("update layout");
+            getBabyList();
           });
         }
       });
@@ -59,9 +89,13 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: const Center(
-        child: Text("list is empty"),
-      ),
+      body: (_babyList.isEmpty)
+          ? const Center(
+              child: Text("list is empty"),
+            )
+          : ListView(
+              children: _buildRow(),
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addBabyInfoPage,
         child: const Icon(Icons.add),
@@ -70,47 +104,66 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-// List<Widget> _buildRow() {
-//   final tiles = _suggestions.map((WordPair pair) {
-//     final alreadySaved = _saved.contains(pair);
-//     return ListTile(
-//       title: Text(pair.asPascalCase, style: _biggerFont),
-//       trailing: Icon(
-//         alreadySaved ? Icons.favorite : Icons.favorite_border,
-//         color: alreadySaved ? Colors.red : null,
-//       ),
-//       onTap: () {
-//         setState(() {
-//           if (alreadySaved) {
-//             _saved.remove(pair);
-//           } else {
-//             _saved.add(pair);
-//           }
-//         });
-//       },
-//     );
-//   });
-//   return ListTile.divideTiles(
-//     context: context,
-//     tiles: tiles,
-//   ).toList();
-// }
-//
-// void _pushSaved() {
-//   Navigator.of(context)
-//       .push(MaterialPageRoute<void>(builder: (BuildContext context) {
-//     final tiles = _saved.map((WordPair pair) {
-//       return ListTile(title: Text(pair.asPascalCase, style: _biggerFont));
-//     });
-//     final divided = tiles.isNotEmpty
-//         ? ListTile.divideTiles(context: context, tiles: tiles).toList()
-//         : <Widget>[];
-//     return Scaffold(
-//       appBar: AppBar(title: Text('Saved Suggestions')),
-//       body: ListView(
-//         children: divided,
-//       ),
-//     );
-//   }));
-// }
+  List<Widget> _buildRow() {
+    final tiles = _babyList.map((Baby baby) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Row(children: <Widget>[
+          CircleAvatar(
+            radius: 40,
+            backgroundColor: Color(baby.iconBackgroundColor),
+            child: Image(
+              image: AssetImage('assets/images/${baby.iconFileName}'),
+              width: 65,
+              height: 65,
+            ),
+          ),
+          const SizedBox(width: 10,),
+          Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  baby.name,
+                  style: const TextStyle(fontSize: 20),
+                ),
+                _howOld(baby.birthday),
+              ]
+          ),
+        ],),)
+      );
+    });
+    return tiles.toList();
+  }
+
+  Text _howOld(String birthday) {
+    var startDate = DateTime.parse(birthday);
+    var currentDate = DateTime.now();
+    var difference = currentDate.difference(startDate);
+    var differenceInDays = difference.inDays;
+    var years = differenceInDays ~/ 365;
+    var months = (differenceInDays % 365).toInt() ~/ 30;
+    var currentDateYear = currentDate.year;
+    var lastMonth = currentDate.month;
+    var birthdayDay = startDate.day;
+    if (currentDate.day < birthdayDay) {
+      if (currentDate.month == 1) {
+        lastMonth = 12;
+        currentDateYear -= 1;
+      } else {
+        lastMonth -= 1;
+      }
+    }
+    var leftday = currentDate
+        .difference(DateTime(currentDateYear, lastMonth, birthdayDay))
+        .inDays;
+    debugPrint("============");
+    debugPrint("years: $years");
+    debugPrint("months: $months");
+    debugPrint("currentDateYear: $currentDateYear");
+    debugPrint("lastMonth: $lastMonth");
+    debugPrint("birthdayDay: $birthdayDay");
+    debugPrint("leftday: $leftday");
+    return Text("我已經$years歲$months月$leftday天囉");
+  }
 }

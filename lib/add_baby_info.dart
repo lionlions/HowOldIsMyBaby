@@ -136,7 +136,7 @@ class _AddBabyInfoState extends State<AddBabyInfo> {
               context: context,
               initialDate: DateTime.now(),
               firstDate: DateTime(1911, 01, 01),
-              lastDate: DateTime(2100, 12, 31));
+              lastDate: DateTime.now());
 
           if (result != null) {
             setState(() {
@@ -152,7 +152,7 @@ class _AddBabyInfoState extends State<AddBabyInfo> {
   Future<void> _chooseIcon() async {
     return showDialog(
         context: context,
-        barrierDismissible: true, //like android cancelable
+        barrierDismissible: true, //like android cancelable, default is true
         builder: (_) {
           return const ChooseIconDialog();
         }).then((iconInfo) {
@@ -176,6 +176,7 @@ class _AddBabyInfoState extends State<AddBabyInfo> {
       iconBackgroundColorValue = iconBackgroundColor.value;
     }
     final baby = Baby(
+        0,
         name: mBabyName,
         iconFileName: iconFileName,
         iconBackgroundColor: iconBackgroundColorValue,

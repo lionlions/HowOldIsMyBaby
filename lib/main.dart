@@ -58,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     //Convert the List<Map<String, dynamic>> into the List<Baby>
     return List.generate(maps.length, (index) {
-      return Baby(
+      return Baby(maps[index][DatabaseHelper.columnId],
           name: maps[index][DatabaseHelper.columnName],
           iconFileName: maps[index][DatabaseHelper.columnIconFileName],
           iconBackgroundColor: maps[index]
@@ -91,7 +91,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: (_babyList.isEmpty)
           ? const Center(
-              child: Text("list is empty"),
+              child: Text(
+                "您尚未新增任何寶寶資訊唷\n請點選右下方 + 進行新增",
+                textAlign: TextAlign.center,
+              ),
             )
           : ListView(
               children: _buildRow(),
@@ -106,34 +109,66 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Widget> _buildRow() {
     final tiles = _babyList.map((Baby baby) {
-      return Card(
-        child: Padding(
+      return InkWell(
+        onLongPress: () => _openConfirmDeleteDialog(baby),
+        child: Card(
+            child: Padding(
           padding: const EdgeInsets.all(10),
-          child: Row(children: <Widget>[
-          CircleAvatar(
-            radius: 40,
-            backgroundColor: Color(baby.iconBackgroundColor),
-            child: Image(
-              image: AssetImage('assets/images/${baby.iconFileName}'),
-              width: 65,
-              height: 65,
-            ),
-          ),
-          const SizedBox(width: 10,),
-          Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  baby.name,
-                  style: const TextStyle(fontSize: 20),
+          child: Row(
+            children: <Widget>[
+              CircleAvatar(
+                radius: 40,
+                backgroundColor: Color(baby.iconBackgroundColor),
+                child: Image(
+                  image: AssetImage('assets/images/${baby.iconFileName}'),
+                  width: 65,
+                  height: 65,
                 ),
-                _howOld(baby.birthday),
-              ]
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      baby.name,
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                    _howOld(baby.birthday),
+                  ]),
+            ],
           ),
-        ],),)
+        )),
       );
     });
     return tiles.toList();
+  }
+
+  Future<void> _openConfirmDeleteDialog(Baby baby) async {
+    return showDialog(
+        context: context,
+        builder: (_) {
+          return ConfirmDeleteDialog(baby.name);
+        }).then((deleteAndUpdateList) {
+      if (deleteAndUpdateList) {
+        _deleteItem(baby.id);
+        setState(() {
+          getBabyList();
+        });
+      }
+    });
+  }
+
+  void _deleteItem(int id) async {
+    // Get a reference to the database
+    Database db = await DatabaseHelper.instance.database;
+
+    await db.delete(DatabaseHelper.table, where: "_id = ?", whereArgs: [id]);
+
+    setState(() {
+      getBabyList();
+    });
   }
 
   Text _howOld(String birthday) {
@@ -165,5 +200,36 @@ class _MyHomePageState extends State<MyHomePage> {
     debugPrint("birthdayDay: $birthdayDay");
     debugPrint("leftday: $leftday");
     return Text("我已經$years歲$months月$leftday天囉");
+  }
+}
+
+class ConfirmDeleteDialog extends StatefulWidget {
+  const ConfirmDeleteDialog(this.name, {Key? key}) : super(key: key);
+
+  final String name;
+
+  @override
+  State<StatefulWidget> createState() => _ConfirmDeleteDialogState();
+}
+
+class _ConfirmDeleteDialogState extends State<ConfirmDeleteDialog> {
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('刪除'),
+      content: Text('您確定要刪除 ${widget.name}'),
+      actions: <Widget>[
+        TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('取消')),
+        TextButton(
+            onPressed: () {
+              Navigator.pop(context, true);
+            },
+            child: const Text('確定')),
+      ],
+    );
   }
 }

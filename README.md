@@ -1,16 +1,27 @@
-# how_old_is_my_baby
+# How Old Is My Baby 我的寶寶幾歲了
 
-A new Flutter project.
+## 設計理念
 
-## Getting Started
+這是一款運用 Flutter 框架做出的一個 **計算年齡** 的 App
 
-This project is a starting point for a Flutter application.
+許多時候，爸爸媽媽和孩子一家人出遊，會將照片上傳 FB 或 IG
 
-A few resources to get you started if this is your first Flutter project:
+通常會 TAG 上孩子的年齡
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+但如果每次都要打開瀏覽器搜尋計算年齡的網站，再重新輸入孩子的年齡，會耗掉許多時間
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+如果有個輸入一次就可以記住年齡的 App，下次需要用到時再次打開就可以馬上知道年齡
+
+這樣就方便許多了
+
+## 技術部份
+
+開發框架：Flutter
+
+運用技術：
+
+1. **Widget**: Scaffold, AppBar, Container, Center, Text, TextField, TextButton, FloatingActionButton, ElevatedButton, ListView, ListBody, Card, Padding, Row, Column, CircleAvatar, Image(AssetImage), SizedBox, AlertDialog, SingleChildScrollView, GestureDetector
+2. **Logic**: Database(sqflite, path), DateTime, DateFormat, Navigator, InkWell
+
+## 螢幕截圖
+<img src="https://github.com/lionlions/HowOldIsMyBaby/blob/master/screen_shot/home.png?raw=true" width="200"> <img src="https://github.com/lionlions/HowOldIsMyBaby/blob/master/screen_shot/add_info.png?raw=true" width="200"> <img src="https://github.com/lionlions/HowOldIsMyBaby/blob/master/screen_shot/choose_icon.png?raw=true" width="200"> <img src="https://github.com/lionlions/HowOldIsMyBaby/blob/master/screen_shot/choose_icon_1.png?raw=true" width="200"> <img src="https://github.com/lionlions/HowOldIsMyBaby/blob/master/screen_shot/choose_birthday.png?raw=true" width="200"> <img src="https://github.com/lionlions/HowOldIsMyBaby/blob/master/screen_shot/finish_info.png?raw=true" width="200"> <img src="https://github.com/lionlions/HowOldIsMyBaby/blob/master/screen_shot/home_list.png?raw=true" width="200"> <img src="https://github.com/lionlions/HowOldIsMyBaby/blob/master/screen_shot/delete.png?raw=true" width="200">

@@ -1,10 +1,19 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:how_old_is_my_baby/Model/baby.dart';
+import 'package:how_old_is_my_baby/baby_rows.dart';
 import 'package:sqflite/sqflite.dart';
 import 'DB/database_helper.dart';
 import 'add_baby_info.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:flutter/foundation.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
+
   runApp(const MyApp());
 }
 
@@ -18,7 +27,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: '我的寶寶幾歲了?'),
+      home: const MyHomePage(title: '我的寶貝幾歲啦?'),
     );
   }
 }
@@ -34,6 +43,59 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<Baby> _babyList = [];
+  BannerAd? _bannerAd;
+  bool _isAdLoaded = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadAd();
+  }
+
+  Future<void> _loadAd() async {
+    // Get an AnchoredAdaptiveBannerAdSize before loading the ad.
+    final AnchoredAdaptiveBannerAdSize? size =
+        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+            MediaQuery.of(context).size.width.truncate());
+    if (size == null) {
+      print('Unable to get height of anchored banner.');
+      return;
+    }
+
+    _bannerAd = BannerAd(
+        adUnitId: getAdUnitId(),
+        size: size,
+        request: AdRequest(),
+        listener: BannerAdListener(onAdLoaded: (Ad ad) {
+          print('$ad loaded: ${ad.responseInfo}');
+          setState(() {
+            // When the ad is loaded, get the ad size and use it to set the height of the ad container.
+            _bannerAd = ad as BannerAd;
+            _isAdLoaded = true;
+          });
+        }, onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          print('Anchored adaptive banner failedToLoad: $error');
+          ad.dispose();
+        }));
+
+    return _bannerAd!.load();
+  }
+
+  String getAdUnitId(){
+    if(kDebugMode){
+      if (Platform.isAndroid){
+        return 'ca-app-pub-3940256099942544/6300978111';
+      } else {
+        return 'ca-app-pub-3940256099942544/2934735716';
+      }
+    }else{
+      if (Platform.isAndroid){
+        return 'ca-app-pub-6530823503033008/6032935974';
+      } else {
+        return 'ca-app-pub-3940256099942544/2934735716';
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -69,10 +131,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    void _addBabyInfoPage() {
+    void _addBabyInfoPage({Baby? baby, bool? isUpdate}) {
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (BuildContext context) {
-        return const AddBabyInfo();
+        return AddBabyInfo(
+          baby: baby,
+          isUpdate: isUpdate,
+        );
       })).then((needToUpdate) {
         if (needToUpdate) {
           setState(() {
@@ -88,148 +153,141 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(
+              Icons.add,
+              color: Colors.white,
+            ),
+            onPressed: _addBabyInfoPage,
+          ),
+          IconButton(
+              onPressed: () {
+                showSearch(
+                  context: context,
+                  delegate: MySearchDelegate(_babyList),
+                );
+              },
+              icon: const Icon(
+                Icons.search,
+                color: Colors.white,
+              ))
+        ],
       ),
-      body: (_babyList.isEmpty)
-          ? const Center(
-              child: Text(
-                "您尚未新增任何寶寶資訊唷\n請點選右下方 + 進行新增",
-                textAlign: TextAlign.center,
+      body: Center(
+          child: Stack(
+        alignment: AlignmentDirectional.bottomCenter,
+        children: <Widget>[
+          (_babyList.isEmpty)
+              ? const Center(
+                  child: Text(
+                    "您尚未新增任何寶寶資訊唷\n請點選右上方 + 進行新增",
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              : Container(
+                  child: BabyRows(_babyList, false, (){
+                    setState(() {
+                      getBabyList();
+                    });
+                  }),
+                  margin: EdgeInsets.only(
+                      bottom: (_bannerAd != null && _isAdLoaded)
+                          ? _bannerAd!.size.height.toDouble() + 10
+                          : 0.0),
+                ),
+          if (_bannerAd != null && _isAdLoaded)
+            Container(
+              width: _bannerAd!.size.width.toDouble(),
+              height: _bannerAd!.size.height.toDouble(),
+              child: AdWidget(
+                ad: _bannerAd!,
               ),
             )
-          : ListView(
-              children: _buildRow(),
-            ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addBabyInfoPage,
-        child: const Icon(Icons.add),
-      ),
-      // This trailing comma makes auto-formatting nicer for build methods.
+        ],
+      )),
     );
   }
+}
 
-  List<Widget> _buildRow() {
-    final tiles = _babyList.map((Baby baby) {
-      return InkWell(
-        onLongPress: () => _openConfirmDeleteDialog(baby),
-        child: Card(
-            child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            children: <Widget>[
-              CircleAvatar(
-                radius: 40,
-                backgroundColor: Color(baby.iconBackgroundColor),
-                child: Image(
-                  image: AssetImage('assets/images/${baby.iconFileName}'),
-                  width: 65,
-                  height: 65,
-                ),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      baby.name,
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                    _howOld(baby.birthday),
-                  ]),
-            ],
-          ),
-        )),
-      );
-    });
-    return tiles.toList();
-  }
+class MySearchDelegate extends SearchDelegate {
+  MySearchDelegate(this._babyList, {Key? key}) : super();
 
-  Future<void> _openConfirmDeleteDialog(Baby baby) async {
-    return showDialog(
-        context: context,
-        builder: (_) {
-          return ConfirmDeleteDialog(baby.name);
-        }).then((deleteAndUpdateList) {
-      if (deleteAndUpdateList) {
-        _deleteItem(baby.id);
-        setState(() {
-          getBabyList();
-        });
-      }
-    });
-  }
+  final List<Baby> _babyList;
 
-  void _deleteItem(int id) async {
+  Future<List<Baby>> _queryItem(String babyName) async {
     // Get a reference to the database
     Database db = await DatabaseHelper.instance.database;
 
-    await db.delete(DatabaseHelper.table, where: "_id = ?", whereArgs: [id]);
+    final List<Map<String, dynamic>> maps = await db
+        .query(DatabaseHelper.table, where: "name = ?", whereArgs: [babyName]);
 
-    setState(() {
-      getBabyList();
+    return List.generate(maps.length, (index) {
+      return Baby(maps[index][DatabaseHelper.columnId],
+          name: maps[index][DatabaseHelper.columnName],
+          iconFileName: maps[index][DatabaseHelper.columnIconFileName],
+          iconBackgroundColor: maps[index]
+              [DatabaseHelper.columnIconBackgroundColor],
+          birthday: maps[index][DatabaseHelper.columnBirthday]);
     });
   }
 
-  Text _howOld(String birthday) {
-    var startDate = DateTime.parse(birthday);
-    var currentDate = DateTime.now();
-    var difference = currentDate.difference(startDate);
-    var differenceInDays = difference.inDays;
-    var years = differenceInDays ~/ 365;
-    var months = (differenceInDays % 365).toInt() ~/ 30;
-    var currentDateYear = currentDate.year;
-    var lastMonth = currentDate.month;
-    var birthdayDay = startDate.day;
-    if (currentDate.day < birthdayDay) {
-      if (currentDate.month == 1) {
-        lastMonth = 12;
-        currentDateYear -= 1;
-      } else {
-        lastMonth -= 1;
-      }
-    }
-    var leftday = currentDate
-        .difference(DateTime(currentDateYear, lastMonth, birthdayDay))
-        .inDays;
-    debugPrint("============");
-    debugPrint("years: $years");
-    debugPrint("months: $months");
-    debugPrint("currentDateYear: $currentDateYear");
-    debugPrint("lastMonth: $lastMonth");
-    debugPrint("birthdayDay: $birthdayDay");
-    debugPrint("leftday: $leftday");
-    return Text("我已經$years歲$months月$leftday天囉");
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return <Widget>[
+      IconButton(
+          onPressed: () {
+            if (query.isEmpty) {
+              close(context, null);
+            } else {
+              query = '';
+            }
+          },
+          icon: const Icon(Icons.close))
+    ];
   }
-}
-
-class ConfirmDeleteDialog extends StatefulWidget {
-  const ConfirmDeleteDialog(this.name, {Key? key}) : super(key: key);
-
-  final String name;
 
   @override
-  State<StatefulWidget> createState() => _ConfirmDeleteDialogState();
-}
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+        onPressed: () => close(context, null), // close searchbar
+        icon: const Icon(Icons.arrow_back));
+  }
 
-class _ConfirmDeleteDialogState extends State<ConfirmDeleteDialog> {
   @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('刪除'),
-      content: Text('您確定要刪除 ${widget.name}'),
-      actions: <Widget>[
-        TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('取消')),
-        TextButton(
-            onPressed: () {
-              Navigator.pop(context, true);
-            },
-            child: const Text('確定')),
-      ],
-    );
+  Widget buildResults(BuildContext context) => FutureBuilder<List<Baby>>(
+    future: _queryItem(query),
+    builder: (context, snapshot) {
+      if(snapshot.hasData
+          && snapshot.data!=null
+          && snapshot.data!.isNotEmpty){
+        return BabyRows(snapshot.data!, true, null);
+      }else{
+        return const Center(
+          child: Text("搜不到結果呢!!"),
+        );
+      }
+    },
+  );
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    List<Baby> suggestions = _babyList.where((baby) {
+      final babyName = baby.name;
+      final result = babyName.toLowerCase();
+      final input = query.toLowerCase();
+      return result.contains(input);
+    }).toList();
+
+    return ListView.builder(
+        itemCount: suggestions.length,
+        itemBuilder: (context, index) {
+          final suggestion = suggestions[index];
+          return ListTile(
+              title: Text(suggestion.name),
+              onTap: () {
+                query = suggestion.name;
+              });
+        });
   }
 }

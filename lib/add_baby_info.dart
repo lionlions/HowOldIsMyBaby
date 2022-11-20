@@ -1,11 +1,19 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:how_old_is_my_baby/DB/database_helper.dart';
 import 'package:how_old_is_my_baby/Model/baby.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AddBabyInfo extends StatefulWidget {
-  const AddBabyInfo({Key? key}) : super(key: key);
+  AddBabyInfo({Key? key, this.baby, this.isUpdate}) : super(key: key);
+
+  final Baby? baby;
+  final bool? isUpdate;
 
   @override
   State<StatefulWidget> createState() => _AddBabyInfoState();
@@ -16,9 +24,84 @@ class _AddBabyInfoState extends State<AddBabyInfo> {
   String mBirthday = "";
   var mIconInfo = <Object>[];
   String mBabyName = "";
+  bool isAlreadyInit = false;
+  TextEditingController mBirthdayController = TextEditingController();
+
+  BannerAd? _bannerAd;
+  bool _isAdLoaded = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadAd();
+  }
+
+  Future<void> _loadAd() async {
+    // Get an AnchoredAdaptiveBannerAdSize before loading the ad.
+    final AnchoredAdaptiveBannerAdSize? size =
+        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+            MediaQuery.of(context).size.width.truncate());
+    if (size == null) {
+      print('Unable to get height of anchored banner.');
+      return;
+    }
+
+    _bannerAd = BannerAd(
+        adUnitId: getAdUnitId(),
+        size: size,
+        request: AdRequest(),
+        listener: BannerAdListener(onAdLoaded: (Ad ad) {
+          print('$ad loaded: ${ad.responseInfo}');
+          setState(() {
+            // When the ad is loaded, get the ad size and use it to set the height of the ad container.
+            _bannerAd = ad as BannerAd;
+            _isAdLoaded = true;
+          });
+        }, onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          print('Anchored adaptive banner failedToLoad: $error');
+          ad.dispose();
+        }));
+
+    return _bannerAd!.load();
+  }
+
+  String getAdUnitId() {
+    if (kDebugMode) {
+      if (Platform.isAndroid) {
+        return 'ca-app-pub-3940256099942544/6300978111';
+      } else {
+        return 'ca-app-pub-3940256099942544/2934735716';
+      }
+    } else {
+      if (Platform.isAndroid) {
+        return 'ca-app-pub-6530823503033008/2192140452';
+      } else {
+        return 'ca-app-pub-3940256099942544/2934735716';
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (!isAlreadyInit && widget.baby != null) {
+      if (widget.baby?.iconFileName != null &&
+          widget.baby!.iconFileName != "" &&
+          widget.baby?.iconBackgroundColor != null &&
+          widget.baby!.iconBackgroundColor != 0) {
+        mIconInfo = <Object>[
+          widget.baby!.iconFileName,
+          Color(widget.baby!.iconBackgroundColor)
+        ];
+      }
+      if (widget.baby?.birthday != null && widget.baby!.birthday != "") {
+        isAlreadyChooseBirthday = true;
+        mBirthday = widget.baby!.birthday;
+      }
+      if (widget.baby?.name != null && widget.baby!.name != "") {
+        mBabyName = widget.baby!.name;
+      }
+      isAlreadyInit = true;
+    }
     return Scaffold(
         appBar: AppBar(
           actions: <Widget>[
@@ -26,10 +109,7 @@ class _AddBabyInfoState extends State<AddBabyInfo> {
               onPressed: _saveBabyInfo,
               child: const Text("完成"),
               style: TextButton.styleFrom(
-                  primary: Theme
-                      .of(context)
-                      .colorScheme
-                      .onPrimary),
+                  primary: Theme.of(context).colorScheme.onPrimary),
             )
           ],
           title: const Text(
@@ -37,36 +117,92 @@ class _AddBabyInfoState extends State<AddBabyInfo> {
             style: TextStyle(fontSize: 18),
           ),
         ),
-        body: Container(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
+        body: Center(
+          child: Stack(
+            alignment: AlignmentDirectional.bottomCenter,
             children: <Widget>[
-              TextField(
-                onChanged: (String newText) async {
-                  mBabyName = newText;
-                },
-                decoration: const InputDecoration(
-                    label: Text(
-                      "小名：",
-                      style: TextStyle(fontSize: 20),
+              Container(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: <Widget>[
+                    TextFormField(
+                      initialValue: mBabyName,
+                      onChanged: (String newText) async {
+                        mBabyName = newText;
+                      },
+                      decoration: const InputDecoration(
+                          label: Text(
+                            "小名：",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          border: OutlineInputBorder(),
+                          hintText: "請輸入寶寶小名",
+                          hintStyle: TextStyle(fontSize: 16)),
                     ),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    border: OutlineInputBorder(),
-                    hintText: "請輸入寶寶小名",
-                    hintStyle: TextStyle(fontSize: 16)),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    TextFormField(
+                      readOnly: true,
+                      controller: mBirthdayController..text = mBirthday,
+                      onTap: () async {
+                        final result = await showDatePicker(
+                            context: context,
+                            initialDate: _getDefaultBirthdayDatePickerDate(),
+                            firstDate: DateTime(1911, 01, 01),
+                            lastDate: DateTime.now());
 
+                        if (result != null) {
+                          setState(() {
+                            mBirthday = DateFormat("yyyy-MM-dd").format(result);
+                            debugPrint("mBirthday: $mBirthday");
+                            mBirthdayController.text = mBirthday;
+                          });
+                        }
+                      },
+                      decoration: const InputDecoration(
+                          suffixIcon: Icon(Icons.calendar_today_rounded),
+                          label: Text(
+                            "出生日期：",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          border: OutlineInputBorder(),
+                          hintText: "請選擇寶寶生日",
+                          hintStyle: TextStyle(fontSize: 16)),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    _getChooseIconLayout(),
+                    // const SizedBox(
+                    //   height: 20,
+                    // ),
+                    // _getBirthdayInfoLayout(),
+                  ],
+                ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
-              _getChooseIconLayout(),
-              const SizedBox(
-                height: 20,
-              ),
-              _getBirthdayInfoLayout(),
+              if (_bannerAd != null && _isAdLoaded)
+                Container(
+                  alignment: AlignmentDirectional.bottomCenter,
+                  width: _bannerAd!.size.width.toDouble(),
+                  height: _bannerAd!.size.height.toDouble(),
+                  child: AdWidget(
+                    ad: _bannerAd!,
+                  ),
+                )
             ],
           ),
         ));
+  }
+
+  DateTime _getDefaultBirthdayDatePickerDate() {
+    if (mBirthday.isEmpty) {
+      return DateTime.now();
+    } else {
+      return DateTime.parse(mBirthday);
+    }
   }
 
   Widget _getChooseIconLayout() {
@@ -84,7 +220,9 @@ class _AddBabyInfoState extends State<AddBabyInfo> {
               height: 65,
             ),
           ),
-          const SizedBox(width: 15,),
+          const SizedBox(
+            width: 15,
+          ),
           ElevatedButton(onPressed: _chooseIcon, child: const Text("重新選擇"))
         ],
       );
@@ -175,14 +313,29 @@ class _AddBabyInfoState extends State<AddBabyInfo> {
       iconBackgroundColor = iconInfo[1];
       iconBackgroundColorValue = iconBackgroundColor.value;
     }
-    final baby = Baby(
-        0,
+
+    if (mBabyName.isEmpty ||
+        iconFileName.isEmpty ||
+        iconBackgroundColorValue == 0) {
+      Fluttertoast.showToast(
+          msg: "請填寫完整資訊",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER);
+      return;
+    }
+
+    final baby = Baby(0,
         name: mBabyName,
         iconFileName: iconFileName,
         iconBackgroundColor: iconBackgroundColorValue,
         birthday: mBirthday);
 
     Map<String, dynamic> row = baby.toMap();
+
+    if (widget.isUpdate == true && widget.baby?.id != 0) {
+      _updateItem(widget.baby!.id, row);
+      return;
+    }
 
     // get a reference to the database
     // because this is an expensive operation we use async and await
@@ -195,7 +348,16 @@ class _AddBabyInfoState extends State<AddBabyInfo> {
     print(await db.query(DatabaseHelper.table));
 
     Navigator.pop(context, true);
+  }
 
+  void _updateItem(int id, Map<String, dynamic> map) async {
+    // Get a reference to the database
+    Database db = await DatabaseHelper.instance.database;
+
+    await db
+        .update(DatabaseHelper.table, map, where: "_id = ?", whereArgs: [id]);
+
+    Navigator.pop(context, true);
   }
 }
 
@@ -293,7 +455,7 @@ class _ChooseIconDialogState extends State<ChooseIconDialog> {
           child: CircleAvatar(
             radius: 43,
             backgroundColor: (mCurrentSelectIconName != null &&
-                mCurrentSelectIconName == iconName)
+                    mCurrentSelectIconName == iconName)
                 ? Colors.black
                 : Colors.transparent,
             child: CircleAvatar(
@@ -324,7 +486,7 @@ class _ChooseIconDialogState extends State<ChooseIconDialog> {
         child: CircleAvatar(
           radius: 33,
           backgroundColor: (mCurrentSelectIconBackground != null &&
-              mCurrentSelectIconBackground == iconBackground)
+                  mCurrentSelectIconBackground == iconBackground)
               ? Colors.black
               : Colors.transparent,
           child: CircleAvatar(

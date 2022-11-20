@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "770426402449",
+    "project_id": "chromatic-force-368906",
+    "storage_bucket": "chromatic-force-368906.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:770426402449:android:adc0ad37be05d478e0f130",
+        "android_client_info": {
+          "package_name": "com.cindy.how_old_is_my_baby"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "770426402449-7l1ro6hgqimjjd2r8k1vc93k3bapt9mk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cindy.how_old_is_my_baby",
+            "certificate_hash": "82cc6292915da3039611b566d6b7bd73cf50bf9b"
+          }
+        },
+        {
+          "client_id": "770426402449-l9q4s599epfojb2d6ngkm7agnt45q4bn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cindy.how_old_is_my_baby",
+            "certificate_hash": "785c077af899ff8e08634b1aad5867ee1791f19b"
+          }
+        },
+        {
+          "client_id": "770426402449-t1is90t6ob067vf647kmvamkgu45tok3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwuKwjXzyyWTJQbdGkuDFOI0lj3F00IjM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "770426402449-t1is90t6ob067vf647kmvamkgu45tok3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-6530823503033008~7537589335"
+    }
+  ],
+  "configuration_version": "1"
+}

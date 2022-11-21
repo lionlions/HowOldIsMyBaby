@@ -9,6 +9,7 @@ import 'DB/database_helper.dart';
 import 'add_baby_info.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +24,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: const [
+        Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans', countryCode: 'TW'),
+        Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans', countryCode: 'CN'),
+        Locale.fromSubtags(languageCode: 'en', countryCode: 'US')
+      ],
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -81,15 +92,15 @@ class _MyHomePageState extends State<MyHomePage> {
     return _bannerAd!.load();
   }
 
-  String getAdUnitId(){
-    if(kDebugMode){
-      if (Platform.isAndroid){
+  String getAdUnitId() {
+    if (kDebugMode) {
+      if (Platform.isAndroid) {
         return 'ca-app-pub-3940256099942544/6300978111';
       } else {
         return 'ca-app-pub-3940256099942544/2934735716';
       }
-    }else{
-      if (Platform.isAndroid){
+    } else {
+      if (Platform.isAndroid) {
         return 'ca-app-pub-6530823503033008/6032935974';
       } else {
         return 'ca-app-pub-3940256099942544/2934735716';
@@ -186,7 +197,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 )
               : Container(
-                  child: BabyRows(_babyList, false, (){
+                  child: BabyRows(_babyList, false, () {
                     setState(() {
                       getBabyList();
                     });
@@ -256,19 +267,19 @@ class MySearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) => FutureBuilder<List<Baby>>(
-    future: _queryItem(query),
-    builder: (context, snapshot) {
-      if(snapshot.hasData
-          && snapshot.data!=null
-          && snapshot.data!.isNotEmpty){
-        return BabyRows(snapshot.data!, true, null);
-      }else{
-        return const Center(
-          child: Text("搜不到結果呢!!"),
-        );
-      }
-    },
-  );
+        future: _queryItem(query),
+        builder: (context, snapshot) {
+          if (snapshot.hasData &&
+              snapshot.data != null &&
+              snapshot.data!.isNotEmpty) {
+            return BabyRows(snapshot.data!, true, null);
+          } else {
+            return const Center(
+              child: Text("搜不到結果呢!!"),
+            );
+          }
+        },
+      );
 
   @override
   Widget buildSuggestions(BuildContext context) {

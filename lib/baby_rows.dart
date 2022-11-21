@@ -104,7 +104,7 @@ class _BabyRowsState extends State<BabyRows> {
     var difference = currentDate.difference(startDate);
     var differenceInDays = difference.inDays;
     var years = differenceInDays ~/ 365;
-    var months = (differenceInDays % 365).toInt() ~/ 30;
+    var months = (differenceInDays % 365).toInt() ~/ 31;
     var currentDateYear = currentDate.year;
     var lastMonth = currentDate.month;
     var birthdayDay = startDate.day;
@@ -120,6 +120,7 @@ class _BabyRowsState extends State<BabyRows> {
         .difference(DateTime(currentDateYear, lastMonth, birthdayDay))
         .inDays;
     debugPrint("============");
+    debugPrint("differenceInDays: $differenceInDays");
     debugPrint("years: $years");
     debugPrint("months: $months");
     debugPrint("currentDateYear: $currentDateYear");

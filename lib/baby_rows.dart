@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:how_old_is_my_baby/Model/baby.dart';
+import 'package:sprintf/sprintf.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'DB/database_helper.dart';
 import 'add_baby_info.dart';
 import 'confirm_delete_dialog.dart';
+import 'generated/l10n.dart';
 
 class BabyRows extends StatefulWidget {
   const BabyRows(this._babyList, this.fromSearch, this._refresh, {Key? key})
@@ -127,7 +129,8 @@ class _BabyRowsState extends State<BabyRows> {
     debugPrint("lastMonth: $lastMonth");
     debugPrint("birthdayDay: $birthdayDay");
     debugPrint("leftday: $leftday");
-    return Text("我已經$years歲$months月$leftday天囉");
+    // return Text("我已經$years歲$months月$leftday天囉");
+    return Text(sprintf(S.of(context).already_years_old, [years, months, leftday]));
   }
 
   void _deleteItem(int id) async {

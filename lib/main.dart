@@ -4,12 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:how_old_is_my_baby/Model/baby.dart';
 import 'package:how_old_is_my_baby/baby_rows.dart';
+import 'package:sprintf/sprintf.dart';
 import 'package:sqflite/sqflite.dart';
 import 'DB/database_helper.dart';
 import 'add_baby_info.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'generated/l10n.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,28 +27,34 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       localizationsDelegates: const [
+        S.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate
       ],
-      supportedLocales: const [
-        Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans', countryCode: 'TW'),
-        Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans', countryCode: 'CN'),
-        Locale.fromSubtags(languageCode: 'en', countryCode: 'US')
-      ],
+      supportedLocales: S.delegate.supportedLocales,
+      localeResolutionCallback: (locale, supportLocales) {
+        //Handle Chinese Language
+        if (locale?.languageCode == 'zh') {
+          if (locale?.scriptCode == 'Hant') {
+            return const Locale('zh', 'TW');
+          } else {
+            return const Locale('zh', 'CN');
+          }
+        }
+        return null;
+      },
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: '我的寶貝幾歲啦?'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -163,7 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text(S.of(context).app_name),
         actions: <Widget>[
           IconButton(
             icon: const Icon(
@@ -190,9 +198,9 @@ class _MyHomePageState extends State<MyHomePage> {
         alignment: AlignmentDirectional.bottomCenter,
         children: <Widget>[
           (_babyList.isEmpty)
-              ? const Center(
+              ? Center(
                   child: Text(
-                    "您尚未新增任何寶寶資訊唷\n請點選右上方 + 進行新增",
+                    S.of(context).baby_list_empty_hint,
                     textAlign: TextAlign.center,
                   ),
                 )
@@ -274,8 +282,8 @@ class MySearchDelegate extends SearchDelegate {
               snapshot.data!.isNotEmpty) {
             return BabyRows(snapshot.data!, true, null);
           } else {
-            return const Center(
-              child: Text("搜不到結果呢!!"),
+            return Center(
+              child: Text(sprintf(S.of(context).no_search_result, [query])),
             );
           }
         },

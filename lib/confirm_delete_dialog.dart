@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sprintf/sprintf.dart';
+
+import 'generated/l10n.dart';
 
 class ConfirmDeleteDialog extends StatefulWidget {
   const ConfirmDeleteDialog(this.name, {Key? key}) : super(key: key);
@@ -13,19 +16,19 @@ class _ConfirmDeleteDialogState extends State<ConfirmDeleteDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('刪除'),
-      content: Text('您確定要刪除 ${widget.name}'),
+      title: Text(S.of(context).delete),
+      content: Text(sprintf(S.of(context).delete_confirm, [widget.name])),
       actions: <Widget>[
         TextButton(
             onPressed: () {
               Navigator.pop(context);
             },
-            child: const Text('取消')),
+            child: Text(S.of(context).cancel)),
         TextButton(
             onPressed: () {
               Navigator.pop(context, true);
             },
-            child: const Text('確定')),
+            child: Text(S.of(context).ok)),
       ],
     );
   }

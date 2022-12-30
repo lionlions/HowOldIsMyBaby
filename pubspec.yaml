@@ -43,6 +43,7 @@ dependencies:
   fluttertoast: ^8.1.1
   firebase_core: ^2.3.0
   firebase_analytics: ^10.0.6
+  sprintf: ^5.0.0
 
 dev_dependencies:
   flutter_test:
@@ -95,3 +96,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+  generate: true
+flutter_intl:
+  enabled: true

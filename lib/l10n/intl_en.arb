@@ -1,0 +1,23 @@
+{
+  "app_name":"How old is my baby?",
+  "baby_list_empty_hint": "The babies list is still empty.\nPlease click \"+\" button to add baby's info.",
+  "no_search_result": "There is no search result for keywords \"%s\"",
+  "delete": "Delete",
+  "delete_confirm": "Are you sure you want to delete %s",
+  "cancel": "Cancel",
+  "ok": "OK",
+  "already_years_old": "I am already %d years %d months %d days old",
+  "done": "Done",
+  "add_baby_info": "Add baby information",
+  "nick_name": "Nick name:",
+  "input_nick_name": "Please enter the baby's nickname.",
+  "birthday": "Date of birth:",
+  "select_birthday": "Please select your baby's birthday.",
+  "select_photo": "Select photo：",
+  "select": "Select",
+  "reSelect": "Reselect",
+  "please_fill_all_info": "Please fill in the complete information.",
+  "select_photo_dialog_title": "Please select baby's photo",
+  "head_shot": "Head shot",
+  "background": "Background"
+}

@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:how_old_is_my_baby/DB/database_helper.dart';
 import 'package:how_old_is_my_baby/Model/baby.dart';
+import 'package:how_old_is_my_baby/generated/l10n.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class AddBabyInfo extends StatefulWidget {
-  AddBabyInfo({Key? key, this.baby, this.isUpdate}) : super(key: key);
+  const AddBabyInfo({Key? key, this.baby, this.isUpdate}) : super(key: key);
 
   final Baby? baby;
   final bool? isUpdate;
@@ -107,14 +108,14 @@ class _AddBabyInfoState extends State<AddBabyInfo> {
           actions: <Widget>[
             TextButton(
               onPressed: _saveBabyInfo,
-              child: const Text("完成"),
+              child: Text(S.of(context).done),
               style: TextButton.styleFrom(
                   primary: Theme.of(context).colorScheme.onPrimary),
             )
           ],
-          title: const Text(
-            "新增寶寶資訊",
-            style: TextStyle(fontSize: 18),
+          title: Text(
+            S.of(context).add_baby_info,
+            style: const TextStyle(fontSize: 18),
           ),
         ),
         body: Center(
@@ -130,15 +131,15 @@ class _AddBabyInfoState extends State<AddBabyInfo> {
                       onChanged: (String newText) async {
                         mBabyName = newText;
                       },
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                           label: Text(
-                            "小名：",
-                            style: TextStyle(fontSize: 20),
+                            S.of(context).nick_name,
+                            style: const TextStyle(fontSize: 20),
                           ),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
-                          border: OutlineInputBorder(),
-                          hintText: "請輸入寶寶小名",
-                          hintStyle: TextStyle(fontSize: 16)),
+                          border: const OutlineInputBorder(),
+                          hintText: S.of(context).input_nick_name,
+                          hintStyle: const TextStyle(fontSize: 16)),
                     ),
                     const SizedBox(
                       height: 20,
@@ -161,16 +162,16 @@ class _AddBabyInfoState extends State<AddBabyInfo> {
                           });
                         }
                       },
-                      decoration: const InputDecoration(
-                          suffixIcon: Icon(Icons.calendar_today_rounded),
+                      decoration: InputDecoration(
+                          suffixIcon: const Icon(Icons.calendar_today_rounded),
                           label: Text(
-                            "出生日期：",
-                            style: TextStyle(fontSize: 20),
+                            S.of(context).birthday,
+                            style: const TextStyle(fontSize: 20),
                           ),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
-                          border: OutlineInputBorder(),
-                          hintText: "請選擇寶寶生日",
-                          hintStyle: TextStyle(fontSize: 16)),
+                          border: const OutlineInputBorder(),
+                          hintText: S.of(context).select_birthday,
+                          hintStyle: const TextStyle(fontSize: 16)),
                     ),
                     const SizedBox(
                       height: 20,
@@ -210,7 +211,7 @@ class _AddBabyInfoState extends State<AddBabyInfo> {
       dynamic iconInfo = mIconInfo;
       return Row(
         children: <Widget>[
-          const Text("選擇頭像：", style: TextStyle(fontSize: 20)),
+          Text(S.of(context).select_photo, style: const TextStyle(fontSize: 20)),
           CircleAvatar(
             radius: 40,
             backgroundColor: iconInfo[1],
@@ -223,68 +224,17 @@ class _AddBabyInfoState extends State<AddBabyInfo> {
           const SizedBox(
             width: 15,
           ),
-          ElevatedButton(onPressed: _chooseIcon, child: const Text("重新選擇"))
+          ElevatedButton(onPressed: _chooseIcon, child: Text(S.of(context).reSelect))
         ],
       );
     } else {
       return Row(
         children: <Widget>[
-          const Text("選擇頭像：", style: TextStyle(fontSize: 20)),
-          ElevatedButton(onPressed: _chooseIcon, child: const Text("選擇"))
+          Text(S.of(context).select_photo, style: const TextStyle(fontSize: 20)),
+          ElevatedButton(onPressed: _chooseIcon, child: Text(S.of(context).select))
         ],
       );
     }
-  }
-
-  Widget _getBirthdayInfoLayout() {
-    if (!isAlreadyChooseBirthday) {
-      return Row(
-        children: <Widget>[
-          const Text("出生日期：", style: TextStyle(fontSize: 20)),
-          _generateChooseBirthdayButton("選擇"),
-        ],
-      );
-    } else {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          const Text("出生日期：", style: TextStyle(fontSize: 20)),
-          Text(
-            mBirthday,
-            style: const TextStyle(fontSize: 16),
-          ),
-          _generateChooseBirthdayButton("重新選擇"),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  mBirthday = "";
-                  isAlreadyChooseBirthday = false;
-                });
-              },
-              child: const Text("清除"))
-        ],
-      );
-    }
-  }
-
-  Widget _generateChooseBirthdayButton(String buttonText) {
-    return ElevatedButton(
-        onPressed: () async {
-          final result = await showDatePicker(
-              context: context,
-              initialDate: DateTime.now(),
-              firstDate: DateTime(1911, 01, 01),
-              lastDate: DateTime.now());
-
-          if (result != null) {
-            setState(() {
-              mBirthday = DateFormat("yyyy-MM-dd").format(result);
-              debugPrint("mBirthday: $mBirthday");
-              isAlreadyChooseBirthday = true;
-            });
-          }
-        },
-        child: Text(buttonText));
   }
 
   Future<void> _chooseIcon() async {
@@ -318,9 +268,9 @@ class _AddBabyInfoState extends State<AddBabyInfo> {
         iconFileName.isEmpty ||
         iconBackgroundColorValue == 0) {
       Fluttertoast.showToast(
-          msg: "請填寫完整資訊",
+          msg: S.of(context).please_fill_all_info,
           toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.CENTER);
+          gravity: ToastGravity.BOTTOM);
       return;
     }
 
@@ -397,11 +347,11 @@ class _ChooseIconDialogState extends State<ChooseIconDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('請選擇寶寶頭像'),
+      title: Text(S.of(context).select_photo_dialog_title),
       content: SingleChildScrollView(
         child: ListBody(
           children: <Widget>[
-            const Text('大頭'),
+            Text(S.of(context).head_shot),
             const SizedBox(
               height: 10,
             ),
@@ -412,7 +362,7 @@ class _ChooseIconDialogState extends State<ChooseIconDialog> {
             const SizedBox(
               height: 10,
             ),
-            const Text('背景'),
+            Text(S.of(context).background),
             const SizedBox(
               height: 10,
             ),
@@ -425,16 +375,24 @@ class _ChooseIconDialogState extends State<ChooseIconDialog> {
       ),
       actions: <Widget>[
         TextButton(
-          child: const Text('取消'),
+          child: Text(S.of(context).cancel),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         TextButton(
-          child: const Text('確定'),
+          child: Text(S.of(context).ok),
           onPressed: () {
-            Navigator.pop(context,
-                <Object>[mCurrentSelectIconName, mCurrentSelectIconBackground]);
+            if(mCurrentSelectIconName!=null && mCurrentSelectIconBackground!=null){
+              Navigator.pop(context,
+                  <Object>[mCurrentSelectIconName, mCurrentSelectIconBackground]);
+            }else{
+              Fluttertoast.showToast(
+                  msg: S.of(context).please_fill_all_info,
+                  toastLength: Toast.LENGTH_LONG,
+                  gravity: ToastGravity.BOTTOM);
+            }
+
           },
         ),
       ],

@@ -1,0 +1,23 @@
+{
+  "app_name": "我的宝贝几岁啦?",
+  "baby_list_empty_hint": "您尚未新增任何宝宝资讯唷\n请点选右上方 + 进行新增",
+  "no_search_result": "没有 \"%s\" 的搜索结果",
+  "delete": "删除",
+  "delete_confirm": "您确定要删除 %s",
+  "cancel": "取消",
+  "ok": "确定",
+  "already_years_old": "我已经%d岁%d月%d天啰",
+  "done": "完成",
+  "add_baby_info": "新增宝宝资讯",
+  "nick_name": "小名：",
+  "input_nick_name": "请输入宝宝小名",
+  "birthday": "出生日期：",
+  "select_birthday": "请选择宝宝生日",
+  "select_photo": "选择头像：",
+  "select": "选择",
+  "reSelect": "重新选择",
+  "please_fill_all_info": "请填写完整资讯",
+  "select_photo_dialog_title": "请选择宝宝头像",
+  "head_shot": "大头",
+  "background": "背景"
+}

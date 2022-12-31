@@ -25,14 +25,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "add_baby_info": MessageLookupByLibrary.simpleMessage("新增宝宝资讯"),
         "already_years_old":
             MessageLookupByLibrary.simpleMessage("我已经%d岁%d月%d天啰"),
+        "already_years_old_hash_tag":
+            MessageLookupByLibrary.simpleMessage("#%dY%dM%dD"),
         "app_name": MessageLookupByLibrary.simpleMessage("我的宝贝几岁啦?"),
         "baby_list_empty_hint":
             MessageLookupByLibrary.simpleMessage("您尚未新增任何宝宝资讯唷\n请点选右上方 + 进行新增"),
         "background": MessageLookupByLibrary.simpleMessage("背景"),
         "birthday": MessageLookupByLibrary.simpleMessage("出生日期："),
         "cancel": MessageLookupByLibrary.simpleMessage("取消"),
-        "delete": MessageLookupByLibrary.simpleMessage("删除"),
-        "delete_confirm": MessageLookupByLibrary.simpleMessage("您确定要删除 %s"),
+        "copy": MessageLookupByLibrary.simpleMessage("拷贝"),
+        "copy_success": MessageLookupByLibrary.simpleMessage("拷贝成功!!"),
         "done": MessageLookupByLibrary.simpleMessage("完成"),
         "head_shot": MessageLookupByLibrary.simpleMessage("大头"),
         "input_nick_name": MessageLookupByLibrary.simpleMessage("请输入宝宝小名"),
@@ -42,8 +44,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "ok": MessageLookupByLibrary.simpleMessage("确定"),
         "please_fill_all_info": MessageLookupByLibrary.simpleMessage("请填写完整资讯"),
         "reSelect": MessageLookupByLibrary.simpleMessage("重新选择"),
+        "remove": MessageLookupByLibrary.simpleMessage("删除"),
+        "remove_confirm": MessageLookupByLibrary.simpleMessage("您确定要删除 %s"),
+        "remove_item": MessageLookupByLibrary.simpleMessage("刪除 \"%s\""),
         "select": MessageLookupByLibrary.simpleMessage("选择"),
         "select_birthday": MessageLookupByLibrary.simpleMessage("请选择宝宝生日"),
+        "select_copy_format": MessageLookupByLibrary.simpleMessage("选择格式"),
         "select_photo": MessageLookupByLibrary.simpleMessage("选择头像："),
         "select_photo_dialog_title":
             MessageLookupByLibrary.simpleMessage("请选择宝宝头像")

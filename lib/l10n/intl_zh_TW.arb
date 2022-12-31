@@ -2,11 +2,13 @@
   "app_name": "我的寶貝幾歲啦?",
   "baby_list_empty_hint": "您尚未新增任何寶寶資訊唷\n請點選右上方 + 進行新增",
   "no_search_result": "沒有 \"%s\" 的搜索結果",
-  "delete": "刪除",
-  "delete_confirm": "您確定要刪除 %s",
+  "remove": "刪除",
+  "remove_item": "刪除 \"%s\"",
+  "remove_confirm": "您確定要刪除 %s",
   "cancel": "取消",
   "ok": "確定",
   "already_years_old": "我已經%d歲%d月%d天囉",
+  "already_years_old_hash_tag": "#%dY%dM%dD",
   "done": "完成",
   "add_baby_info": "新增寶寶資訊",
   "nick_name": "小名：",
@@ -19,5 +21,8 @@
   "please_fill_all_info": "請填寫完整資訊",
   "select_photo_dialog_title": "請選擇寶寶頭像",
   "head_shot": "大頭",
-  "background": "背景"
+  "background": "背景",
+  "copy": "複製",
+  "select_copy_format": "選擇格式",
+  "copy_success": "複製成功!!"
 }

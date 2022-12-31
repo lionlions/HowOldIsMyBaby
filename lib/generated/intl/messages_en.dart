@@ -26,15 +26,16 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Add baby information"),
         "already_years_old": MessageLookupByLibrary.simpleMessage(
             "I am already %d years %d months %d days old"),
+        "already_years_old_hash_tag":
+            MessageLookupByLibrary.simpleMessage("#%dY%dM%dD"),
         "app_name": MessageLookupByLibrary.simpleMessage("How old is my baby?"),
         "baby_list_empty_hint": MessageLookupByLibrary.simpleMessage(
             "The babies list is still empty.\nPlease click \"+\" button to add baby\'s info."),
         "background": MessageLookupByLibrary.simpleMessage("Background"),
         "birthday": MessageLookupByLibrary.simpleMessage("Date of birth:"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
-        "delete": MessageLookupByLibrary.simpleMessage("Delete"),
-        "delete_confirm": MessageLookupByLibrary.simpleMessage(
-            "Are you sure you want to delete %s"),
+        "copy": MessageLookupByLibrary.simpleMessage("Copy"),
+        "copy_success": MessageLookupByLibrary.simpleMessage("Copy success!!"),
         "done": MessageLookupByLibrary.simpleMessage("Done"),
         "head_shot": MessageLookupByLibrary.simpleMessage("Head shot"),
         "input_nick_name": MessageLookupByLibrary.simpleMessage(
@@ -46,9 +47,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "please_fill_all_info": MessageLookupByLibrary.simpleMessage(
             "Please fill in the complete information."),
         "reSelect": MessageLookupByLibrary.simpleMessage("Reselect"),
+        "remove": MessageLookupByLibrary.simpleMessage("Remove"),
+        "remove_confirm": MessageLookupByLibrary.simpleMessage(
+            "Are you sure you want to remove %s"),
+        "remove_item": MessageLookupByLibrary.simpleMessage("Remove \"%s\""),
         "select": MessageLookupByLibrary.simpleMessage("Select"),
         "select_birthday": MessageLookupByLibrary.simpleMessage(
             "Please select your baby\'s birthday."),
+        "select_copy_format":
+            MessageLookupByLibrary.simpleMessage("Choose format"),
         "select_photo": MessageLookupByLibrary.simpleMessage("Select photo："),
         "select_photo_dialog_title":
             MessageLookupByLibrary.simpleMessage("Please select baby\'s photo")

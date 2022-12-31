@@ -80,21 +80,31 @@ class S {
     );
   }
 
-  /// `Delete`
-  String get delete {
+  /// `Remove`
+  String get remove {
     return Intl.message(
-      'Delete',
-      name: 'delete',
+      'Remove',
+      name: 'remove',
       desc: '',
       args: [],
     );
   }
 
-  /// `Are you sure you want to delete %s`
-  String get delete_confirm {
+  /// `Remove "%s"`
+  String get remove_item {
     return Intl.message(
-      'Are you sure you want to delete %s',
-      name: 'delete_confirm',
+      'Remove "%s"',
+      name: 'remove_item',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to remove %s`
+  String get remove_confirm {
+    return Intl.message(
+      'Are you sure you want to remove %s',
+      name: 'remove_confirm',
       desc: '',
       args: [],
     );
@@ -125,6 +135,16 @@ class S {
     return Intl.message(
       'I am already %d years %d months %d days old',
       name: 'already_years_old',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `#%dY%dM%dD`
+  String get already_years_old_hash_tag {
+    return Intl.message(
+      '#%dY%dM%dD',
+      name: 'already_years_old_hash_tag',
       desc: '',
       args: [],
     );
@@ -255,6 +275,36 @@ class S {
     return Intl.message(
       'Background',
       name: 'background',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Copy`
+  String get copy {
+    return Intl.message(
+      'Copy',
+      name: 'copy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose format`
+  String get select_copy_format {
+    return Intl.message(
+      'Choose format',
+      name: 'select_copy_format',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Copy success!!`
+  String get copy_success {
+    return Intl.message(
+      'Copy success!!',
+      name: 'copy_success',
       desc: '',
       args: [],
     );

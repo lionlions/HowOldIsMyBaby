@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:how_old_is_my_baby/Model/baby.dart';
+import 'package:how_old_is_my_baby/WidgetUtils.dart';
+import 'package:how_old_is_my_baby/action_bottom_sheet.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -33,7 +35,7 @@ class _BabyRowsState extends State<BabyRows> {
     final tiles = babyList.map((Baby baby) {
       return InkWell(
         onLongPress:
-            widget.fromSearch ? () {} : () => _openConfirmDeleteDialog(baby),
+            widget.fromSearch ? () {} : () => _openActionBottomSheet(baby),
         onTap: widget.fromSearch
             ? () {}
             : () => _editBabyInfoPage(baby: baby, isUpdate: true),
@@ -61,7 +63,7 @@ class _BabyRowsState extends State<BabyRows> {
                       baby.name,
                       style: const TextStyle(fontSize: 20),
                     ),
-                    _howOld(baby.birthday),
+                    Text(WidgetUtils.howOld(context, baby.birthday)),
                   ]),
             ],
           ),
@@ -85,11 +87,11 @@ class _BabyRowsState extends State<BabyRows> {
     });
   }
 
-  Future<void> _openConfirmDeleteDialog(Baby baby) async {
-    return showDialog(
+  Future<void> _openActionBottomSheet(Baby baby) async {
+    return showModalBottomSheet(
         context: context,
         builder: (_) {
-          return ConfirmDeleteDialog(baby.name);
+          return ActionBottomSheet(baby);
         }).then((deleteAndUpdateList) {
       if (deleteAndUpdateList) {
         _deleteItem(baby.id);
@@ -98,39 +100,6 @@ class _BabyRowsState extends State<BabyRows> {
         }
       }
     });
-  }
-
-  Text _howOld(String birthday) {
-    var startDate = DateTime.parse(birthday);
-    var currentDate = DateTime.now();
-    var difference = currentDate.difference(startDate);
-    var differenceInDays = difference.inDays;
-    var years = differenceInDays ~/ 365;
-    var months = (differenceInDays % 365).toInt() ~/ 31;
-    var currentDateYear = currentDate.year;
-    var lastMonth = currentDate.month;
-    var birthdayDay = startDate.day;
-    if (currentDate.day < birthdayDay) {
-      if (currentDate.month == 1) {
-        lastMonth = 12;
-        currentDateYear -= 1;
-      } else {
-        lastMonth -= 1;
-      }
-    }
-    var leftday = currentDate
-        .difference(DateTime(currentDateYear, lastMonth, birthdayDay))
-        .inDays;
-    debugPrint("============");
-    debugPrint("differenceInDays: $differenceInDays");
-    debugPrint("years: $years");
-    debugPrint("months: $months");
-    debugPrint("currentDateYear: $currentDateYear");
-    debugPrint("lastMonth: $lastMonth");
-    debugPrint("birthdayDay: $birthdayDay");
-    debugPrint("leftday: $leftday");
-    // return Text("我已經$years歲$months月$leftday天囉");
-    return Text(sprintf(S.of(context).already_years_old, [years, months, leftday]));
   }
 
   void _deleteItem(int id) async {

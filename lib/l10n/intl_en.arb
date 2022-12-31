@@ -2,11 +2,13 @@
   "app_name":"How old is my baby?",
   "baby_list_empty_hint": "The babies list is still empty.\nPlease click \"+\" button to add baby's info.",
   "no_search_result": "There is no search result for keywords \"%s\"",
-  "delete": "Delete",
-  "delete_confirm": "Are you sure you want to delete %s",
+  "remove": "Remove",
+  "remove_item": "Remove \"%s\"",
+  "remove_confirm": "Are you sure you want to remove %s",
   "cancel": "Cancel",
   "ok": "OK",
   "already_years_old": "I am already %d years %d months %d days old",
+  "already_years_old_hash_tag": "#%dY%dM%dD",
   "done": "Done",
   "add_baby_info": "Add baby information",
   "nick_name": "Nick name:",
@@ -19,5 +21,8 @@
   "please_fill_all_info": "Please fill in the complete information.",
   "select_photo_dialog_title": "Please select baby's photo",
   "head_shot": "Head shot",
-  "background": "Background"
+  "background": "Background",
+  "copy": "Copy",
+  "select_copy_format": "Choose format",
+  "copy_success": "Copy success!!"
 }

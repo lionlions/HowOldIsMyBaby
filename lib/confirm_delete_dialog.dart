@@ -16,8 +16,8 @@ class _ConfirmDeleteDialogState extends State<ConfirmDeleteDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(S.of(context).delete),
-      content: Text(sprintf(S.of(context).delete_confirm, [widget.name])),
+      title: Text(S.of(context).remove),
+      content: Text(sprintf(S.of(context).remove_confirm, [widget.name])),
       actions: <Widget>[
         TextButton(
             onPressed: () {

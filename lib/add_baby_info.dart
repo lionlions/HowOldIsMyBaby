@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:how_old_is_my_baby/DB/database_helper.dart';
 import 'package:how_old_is_my_baby/Model/baby.dart';
+import 'package:how_old_is_my_baby/WidgetUtils.dart';
 import 'package:how_old_is_my_baby/generated/l10n.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
@@ -25,6 +26,7 @@ class _AddBabyInfoState extends State<AddBabyInfo> {
   String mBirthday = "";
   var mIconInfo = <Object>[];
   String mBabyName = "";
+  bool needToCountDownBirthday = false;
   bool isAlreadyInit = false;
   TextEditingController mBirthdayController = TextEditingController();
 
@@ -100,6 +102,9 @@ class _AddBabyInfoState extends State<AddBabyInfo> {
       }
       if (widget.baby?.name != null && widget.baby!.name != "") {
         mBabyName = widget.baby!.name;
+      }
+      if(widget.baby?.countDownBirthday != null){
+        needToCountDownBirthday = widget.baby!.countDownBirthday == 1;
       }
       isAlreadyInit = true;
     }
@@ -177,6 +182,17 @@ class _AddBabyInfoState extends State<AddBabyInfo> {
                       height: 20,
                     ),
                     _getChooseIconLayout(),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(children: [
+                      Text(S.of(context).birthday_count_down, style: const TextStyle(fontSize: 20)),
+                      Switch(value: needToCountDownBirthday, onChanged: (value){
+                        setState(() {
+                          needToCountDownBirthday = value;
+                        });
+                      })
+                    ],)
                     // const SizedBox(
                     //   height: 20,
                     // ),
@@ -278,7 +294,8 @@ class _AddBabyInfoState extends State<AddBabyInfo> {
         name: mBabyName,
         iconFileName: iconFileName,
         iconBackgroundColor: iconBackgroundColorValue,
-        birthday: mBirthday);
+        birthday: mBirthday,
+        countDownBirthday: needToCountDownBirthday? 1 : 0);
 
     Map<String, dynamic> row = baby.toMap();
 

@@ -33,6 +33,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "The babies list is still empty.\nPlease click \"+\" button to add baby\'s info."),
         "background": MessageLookupByLibrary.simpleMessage("Background"),
         "birthday": MessageLookupByLibrary.simpleMessage("Date of birth:"),
+        "birthday_count_down":
+            MessageLookupByLibrary.simpleMessage("Birthday count down:"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "copy": MessageLookupByLibrary.simpleMessage("Copy"),
         "copy_success": MessageLookupByLibrary.simpleMessage("Copy success!!"),

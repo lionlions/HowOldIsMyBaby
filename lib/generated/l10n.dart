@@ -309,6 +309,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Birthday count down:`
+  String get birthday_count_down {
+    return Intl.message(
+      'Birthday count down:',
+      name: 'birthday_count_down',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

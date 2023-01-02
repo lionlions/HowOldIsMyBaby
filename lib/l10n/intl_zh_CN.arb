@@ -24,5 +24,6 @@
   "background": "背景",
   "copy": "拷贝",
   "select_copy_format": "选择格式",
-  "copy_success": "拷贝成功!!"
+  "copy_success": "拷贝成功!!",
+  "birthday_count_down": "生日倒计时："
 }

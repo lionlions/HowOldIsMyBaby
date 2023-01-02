@@ -24,5 +24,6 @@
   "background": "Background",
   "copy": "Copy",
   "select_copy_format": "Choose format",
-  "copy_success": "Copy success!!"
+  "copy_success": "Copy success!!",
+  "birthday_count_down": "Birthday count down:"
 }

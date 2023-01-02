@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 import 'package:sprintf/sprintf.dart';
 
 import 'generated/l10n.dart';
@@ -66,5 +67,17 @@ class WidgetUtils {
     debugPrint("birthdayDay: $birthdayDay");
     debugPrint("leftday: $leftday");
     return sprintf(S.of(context).already_years_old_hash_tag, [years, months, leftday]);
+  }
+
+  static int nextBirthdayLeft(BuildContext context, String birthday){
+    var format = DateFormat("yyyy-MM-dd");
+    var startDate = DateTime.parse(birthday);
+    var currentDate = DateTime.now();
+    var currentDateFormat = format.format(currentDate);
+    currentDate = DateTime.parse(currentDateFormat);
+    var nextBirthday = startDate.add(const Duration(days: 365));
+    var diff = nextBirthday.difference(currentDate);
+    debugPrint("diff day: ${diff.inDays}");
+    return diff.inDays;
   }
 }

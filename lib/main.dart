@@ -140,11 +140,11 @@ class _MyHomePageState extends State<MyHomePage> {
     //Convert the List<Map<String, dynamic>> into the List<Baby>
     return List.generate(maps.length, (index) {
       return Baby(maps[index][DatabaseHelper.columnId],
-          name: maps[index][DatabaseHelper.columnName],
-          iconFileName: maps[index][DatabaseHelper.columnIconFileName],
-          iconBackgroundColor: maps[index]
-              [DatabaseHelper.columnIconBackgroundColor],
-          birthday: maps[index][DatabaseHelper.columnBirthday]);
+                  name: maps[index][DatabaseHelper.columnName],
+                  iconFileName: maps[index][DatabaseHelper.columnIconFileName],
+                  iconBackgroundColor: maps[index][DatabaseHelper.columnIconBackgroundColor],
+                  birthday: maps[index][DatabaseHelper.columnBirthday],
+                  countDownBirthday: maps[index][DatabaseHelper.columnCountDownBirthday]);
     });
   }
 
@@ -243,11 +243,11 @@ class MySearchDelegate extends SearchDelegate {
 
     return List.generate(maps.length, (index) {
       return Baby(maps[index][DatabaseHelper.columnId],
-          name: maps[index][DatabaseHelper.columnName],
-          iconFileName: maps[index][DatabaseHelper.columnIconFileName],
-          iconBackgroundColor: maps[index]
-              [DatabaseHelper.columnIconBackgroundColor],
-          birthday: maps[index][DatabaseHelper.columnBirthday]);
+                  name: maps[index][DatabaseHelper.columnName],
+                  iconFileName: maps[index][DatabaseHelper.columnIconFileName],
+                  iconBackgroundColor: maps[index][DatabaseHelper.columnIconBackgroundColor],
+                  birthday: maps[index][DatabaseHelper.columnBirthday],
+                  countDownBirthday: maps[index][DatabaseHelper.columnCountDownBirthday]);
     });
   }
 

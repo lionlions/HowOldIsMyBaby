@@ -33,6 +33,10 @@ class _BabyRowsState extends State<BabyRows> {
   List<Widget> _buildRow(List<Baby> babyList) {
     debugPrint("babyList size: ${babyList.length}");
     final tiles = babyList.map((Baby baby) {
+      var nextBirthdayLeft = baby.countDownBirthday == 1
+          ? WidgetUtils.nextBirthdayLeft(context, baby.birthday)
+          : -1;
+      debugPrint("nextBirthdayLeft: $nextBirthdayLeft");
       return InkWell(
         onLongPress:
             widget.fromSearch ? () {} : () => _openActionBottomSheet(baby),
@@ -41,36 +45,164 @@ class _BabyRowsState extends State<BabyRows> {
             : () => _editBabyInfoPage(baby: baby, isUpdate: true),
         child: Card(
             child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            children: <Widget>[
-              CircleAvatar(
-                radius: 40,
-                backgroundColor: Color(baby.iconBackgroundColor),
-                child: Image(
-                  image: AssetImage('assets/images/${baby.iconFileName}'),
-                  width: 65,
-                  height: 65,
-                ),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      baby.name,
-                      style: const TextStyle(fontSize: 20),
+                padding: const EdgeInsets.all(10),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Row(
+                      children: <Widget>[
+                        CircleAvatar(
+                          radius: 40,
+                          backgroundColor: Color(baby.iconBackgroundColor),
+                          child: Image(
+                            image: AssetImage(
+                                'assets/images/${baby.iconFileName}'),
+                            width: 65,
+                            height: 65,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                baby.name,
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                              Text(WidgetUtils.howOld(context, baby.birthday)),
+                            ]),
+                      ],
                     ),
-                    Text(WidgetUtils.howOld(context, baby.birthday)),
-                  ]),
-            ],
-          ),
-        )),
+                    if (nextBirthdayLeft != -1 &&
+                        nextBirthdayLeft > 0 &&
+                        nextBirthdayLeft < 365)
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: _buildCountDownBirthday(nextBirthdayLeft),
+                      )
+                  ],
+                ))),
       );
     });
     return tiles.toList();
+  }
+
+  Widget _buildCountDownBirthday(int nextBirthdayLeft) {
+    if (nextBirthdayLeft < 10) {
+      var digit = nextBirthdayLeft % 10;
+      return Column(
+        children: [
+          Wrap(
+            children: [
+              _countDownNumber(0),
+              const SizedBox(
+                width: 3,
+              ),
+              _countDownNumber(digit)
+            ],
+          ),
+          const SizedBox(
+            height: 3,
+          ),
+          const Text(
+            "DAYS LEFT",
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          )
+        ],
+      );
+    } else if (nextBirthdayLeft < 100) {
+      var digit = nextBirthdayLeft % 10;
+      var tensDigit = nextBirthdayLeft ~/ 10;
+      return Column(
+        children: [
+          Wrap(
+            children: [
+              _countDownNumber(tensDigit),
+              const SizedBox(
+                width: 3,
+              ),
+              _countDownNumber(digit)
+            ],
+          ),
+          const SizedBox(
+            height: 3,
+          ),
+          const Text(
+            "DAYS LEFT",
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          )
+        ],
+      );
+    } else {
+      var digit = nextBirthdayLeft % 10;
+      var tensDigit = nextBirthdayLeft % 100 ~/ 10;
+      var hundredsDigit = nextBirthdayLeft ~/ 100;
+      return Column(
+        children: [
+          Wrap(
+            children: [
+              _countDownNumber(hundredsDigit),
+              const SizedBox(
+                width: 3,
+              ),
+              _countDownNumber(tensDigit),
+              const SizedBox(
+                width: 3,
+              ),
+              _countDownNumber(digit)
+            ],
+          ),
+          const SizedBox(
+            height: 3,
+          ),
+          const Text(
+            "DAYS LEFT",
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          )
+        ],
+      );
+    }
+  }
+
+  Stack _countDownNumber(int number) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Column(
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(5.0),
+                  topRight: Radius.circular(5.0)),
+              child: Container(
+                width: 30.0,
+                height: 20.0,
+                color: Colors.amber,
+              ),
+            ),
+            const SizedBox(
+              height: 2.0,
+            ),
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(5.0),
+                  bottomRight: Radius.circular(5.0)),
+              child: Container(
+                width: 30.0,
+                height: 20.0,
+                color: Colors.amber,
+              ),
+            ),
+          ],
+        ),
+        Text(
+          "$number",
+          style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+        )
+      ],
+    );
   }
 
   void _editBabyInfoPage({Baby? baby, bool? isUpdate}) {

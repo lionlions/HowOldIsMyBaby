@@ -32,6 +32,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("您尚未新增任何寶寶資訊唷\n請點選右上方 + 進行新增"),
         "background": MessageLookupByLibrary.simpleMessage("背景"),
         "birthday": MessageLookupByLibrary.simpleMessage("出生日期："),
+        "birthday_count_down": MessageLookupByLibrary.simpleMessage("生日倒數："),
         "cancel": MessageLookupByLibrary.simpleMessage("取消"),
         "copy": MessageLookupByLibrary.simpleMessage("複製"),
         "copy_success": MessageLookupByLibrary.simpleMessage("複製成功!!"),
